@@ -19,12 +19,17 @@ package guru.sfg.beer.order.service.domain;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Version;
 import java.sql.Timestamp;
 import java.util.UUID;
 
@@ -32,18 +37,12 @@ import java.util.UUID;
  * Created by jt on 2019-01-26.
  */
 
+@SuperBuilder
 @Setter
 @Getter
 @NoArgsConstructor
 @MappedSuperclass
 public class BaseEntity {
-
-    public BaseEntity(UUID id, Long version, Timestamp createdDate, Timestamp lastModifiedDate) {
-        this.id = id;
-        this.version = version;
-        this.createdDate = createdDate;
-        this.lastModifiedDate = lastModifiedDate;
-    }
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -51,8 +50,8 @@ public class BaseEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
-    @Type(type="org.hibernate.type.UUIDCharType")
-    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false )
+    @Type(type = "org.hibernate.type.UUIDCharType")
+    @Column(length = 36, columnDefinition = "varchar", updatable = false, nullable = false)
     private UUID id;
 
     @Version

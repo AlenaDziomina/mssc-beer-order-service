@@ -57,22 +57,25 @@ public class BeerOrderServiceImpl implements BeerOrderService {
 
     @Override
     public BeerOrderPagedList listOrders(UUID customerId, Pageable pageable) {
-        Optional<Customer> customerOptional = customerRepository.findById(customerId);
-
-        if (customerOptional.isPresent()) {
-            Page<BeerOrder> beerOrderPage =
-                    beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
-
-            return new BeerOrderPagedList(beerOrderPage
-                    .stream()
-                    .map(beerOrderMapper::beerOrderToDto)
-                    .collect(Collectors.toList()), PageRequest.of(
-                    beerOrderPage.getPageable().getPageNumber(),
-                    beerOrderPage.getPageable().getPageSize()),
-                    beerOrderPage.getTotalElements());
+        Page<BeerOrder> beerOrderPage;
+        if (customerId == null) {
+            beerOrderPage = beerOrderRepository.findAll(pageable);
         } else {
-            return null;
+            Optional<Customer> customerOptional = customerRepository.findById(customerId);
+            if (customerOptional.isPresent()) {
+                beerOrderPage =
+                        beerOrderRepository.findAllByCustomer(customerOptional.get(), pageable);
+            } else {
+                return null;
+            }
         }
+         return new BeerOrderPagedList(beerOrderPage
+                 .stream()
+                 .map(beerOrderMapper::beerOrderToDto)
+                 .collect(Collectors.toList()), PageRequest.of(
+                 beerOrderPage.getPageable().getPageNumber(),
+                 beerOrderPage.getPageable().getPageSize()),
+                 beerOrderPage.getTotalElements());
     }
 
     @Transactional
